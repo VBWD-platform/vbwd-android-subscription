@@ -26,11 +26,12 @@ class SubscriptionCheckoutSource(
     private var loadedItems: List<CartItem> = emptyList()
     private var loadedPlanId: String? = null
 
-    override fun matches(context: CheckoutContext): Boolean {
-        context.source?.let { return it == "subscription" }
-        if (context.planSlug != null) return true
-        return cart.items("subscription").isNotEmpty() || cart.items("add_on").isNotEmpty()
-    }
+    override fun matches(context: CheckoutContext): Boolean =
+        when {
+            context.source != null -> context.source == "subscription"
+            context.planSlug != null -> true
+            else -> cart.items("subscription").isNotEmpty() || cart.items("add_on").isNotEmpty()
+        }
 
     override suspend fun load(context: CheckoutContext) {
         // Cart-first: selectPlan() adds the plan to the cart before checkout.
@@ -55,12 +56,13 @@ class SubscriptionCheckoutSource(
     override fun orderTotal(): Double = loadedItems.sumOf { it.price * it.quantity }
 
     override suspend fun submit(paymentMethodCode: String?): CheckoutResult {
-        val request = SubscriptionCheckoutRequest(
-            planId = loadedPlanId,
-            tokenBundleIds = cart.items("token_bundle").map { it.id },
-            addOnIds = cart.items("add_on").map { it.id },
-            paymentMethodCode = paymentMethodCode ?: "",
-        )
+        val request =
+            SubscriptionCheckoutRequest(
+                planId = loadedPlanId,
+                tokenBundleIds = cart.items("token_bundle").map { it.id },
+                addOnIds = cart.items("add_on").map { it.id },
+                paymentMethodCode = paymentMethodCode ?: "",
+            )
         return api.post(SubscriptionEndpoints.CHECKOUT, request)
     }
 

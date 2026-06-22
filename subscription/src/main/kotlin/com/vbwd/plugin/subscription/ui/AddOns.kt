@@ -57,11 +57,12 @@ class AddOnsViewModel(
             coroutineScope {
                 val addons = async { service.fetchAddOns() }
                 val sub = async { service.fetchActiveSub() }
-                _uiState.value = UiState(
-                    isLoading = false,
-                    addons = addons.await().filter { it.isActive == true },
-                    currentSubscription = sub.await(),
-                )
+                _uiState.value =
+                    UiState(
+                        isLoading = false,
+                        addons = addons.await().filter { it.isActive == true },
+                        currentSubscription = sub.await(),
+                    )
             }
         } catch (error: ApiError) {
             _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = error.message)
@@ -76,10 +77,11 @@ class AddOnsViewModel(
                 name = addon.name,
                 price = addon.price?.toDoubleOrNull() ?: 0.0,
                 currency = addon.currency ?: "USD",
-                metadata = mapOf(
-                    "slug" to (addon.slug ?: ""),
-                    "billing_period" to (addon.billingPeriod ?: "month"),
-                ),
+                metadata =
+                    mapOf(
+                        "slug" to (addon.slug ?: ""),
+                        "billing_period" to (addon.billingPeriod ?: "month"),
+                    ),
             ),
         )
     }

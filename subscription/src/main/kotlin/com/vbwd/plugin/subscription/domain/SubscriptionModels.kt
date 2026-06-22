@@ -32,7 +32,10 @@ internal object FeaturesAsListSerializer : KSerializer<List<String>?> {
         }
     }
 
-    override fun serialize(encoder: Encoder, value: List<String>?) {
+    override fun serialize(
+        encoder: Encoder,
+        value: List<String>?,
+    ) {
         val list = value ?: emptyList()
         encoder.encodeSerializableValue(ListSerializer(String.serializer()), list)
     }
@@ -162,15 +165,17 @@ internal data class CancelResponse(
 )
 
 /** Convert a tarif plan to a generic cart item for checkout. */
-fun TarifPlan.toCartItem(): CartItem = CartItem(
-    type = "subscription",
-    id = id,
-    name = name,
-    price = displayPrice ?: grossPrice ?: 0.0,
-    quantity = 1,
-    currency = displayCurrency ?: "USD",
-    metadata = mapOf(
-        "slug" to (slug ?: ""),
-        "billing_period" to (billingPeriod ?: "month"),
-    ),
-)
+fun TarifPlan.toCartItem(): CartItem =
+    CartItem(
+        type = "subscription",
+        id = id,
+        name = name,
+        price = displayPrice ?: grossPrice ?: 0.0,
+        quantity = 1,
+        currency = displayCurrency ?: "USD",
+        metadata =
+            mapOf(
+                "slug" to (slug ?: ""),
+                "billing_period" to (billingPeriod ?: "month"),
+            ),
+    )

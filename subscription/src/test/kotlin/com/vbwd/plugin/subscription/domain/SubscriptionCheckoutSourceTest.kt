@@ -14,8 +14,10 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class SubscriptionCheckoutSourceTest {
-    private fun subItem(id: String, price: Double = 29.99) =
-        CartItem(type = "subscription", id = id, name = id, price = price)
+    private fun subItem(
+        id: String,
+        price: Double = 29.99,
+    ) = CartItem(type = "subscription", id = id, name = id, price = price)
 
     @Test
     fun `matches the source hint, a plan slug, and subscription cart items`() {
@@ -30,39 +32,43 @@ class SubscriptionCheckoutSourceTest {
     }
 
     @Test
-    fun `load is cart-first and computes the total`() = runTest {
-        val cart = Cart()
-        cart.add(subItem("p1", price = 10.0))
-        val source = SubscriptionCheckoutSource(FakeApi(), cart, FakeSubscriptionService())
-        source.load(CheckoutContext(source = "subscription"))
-        assertEquals(listOf("p1"), source.lineItems().map { it.id })
-        assertEquals(10.0, source.orderTotal())
-    }
+    fun `load is cart-first and computes the total`() =
+        runTest {
+            val cart = Cart()
+            cart.add(subItem("p1", price = 10.0))
+            val source = SubscriptionCheckoutSource(FakeApi(), cart, FakeSubscriptionService())
+            source.load(CheckoutContext(source = "subscription"))
+            assertEquals(listOf("p1"), source.lineItems().map { it.id })
+            assertEquals(10.0, source.orderTotal())
+        }
 
     @Test
-    fun `slug-driven load fetches the plan and adds it to the cart`() = runTest {
-        val cart = Cart()
-        val service = FakeSubscriptionService(
-            plan = TarifPlan(id = "p1", name = "Pro", slug = "pro", displayPrice = 5.0),
-        )
-        val source = SubscriptionCheckoutSource(FakeApi(), cart, service)
-        source.load(CheckoutContext(planSlug = "pro", isCart = false))
-        assertEquals(listOf("p1"), source.lineItems().map { it.id })
-        assertEquals(1, cart.allItems().size)
-    }
+    fun `slug-driven load fetches the plan and adds it to the cart`() =
+        runTest {
+            val cart = Cart()
+            val service =
+                FakeSubscriptionService(
+                    plan = TarifPlan(id = "p1", name = "Pro", slug = "pro", displayPrice = 5.0),
+                )
+            val source = SubscriptionCheckoutSource(FakeApi(), cart, service)
+            source.load(CheckoutContext(planSlug = "pro", isCart = false))
+            assertEquals(listOf("p1"), source.lineItems().map { it.id })
+            assertEquals(1, cart.allItems().size)
+        }
 
     @Test
-    fun `submit posts a plan_id payload and returns the result`() = runTest {
-        val cart = Cart()
-        cart.add(subItem("p1"))
-        val api = FakeApi(nextResult = CheckoutResult(invoice = CheckoutInvoice(id = "inv1")))
-        val source = SubscriptionCheckoutSource(api, cart, FakeSubscriptionService())
-        source.load(CheckoutContext(source = "subscription"))
+    fun `submit posts a plan_id payload and returns the result`() =
+        runTest {
+            val cart = Cart()
+            cart.add(subItem("p1"))
+            val api = FakeApi(nextResult = CheckoutResult(invoice = CheckoutInvoice(id = "inv1")))
+            val source = SubscriptionCheckoutSource(api, cart, FakeSubscriptionService())
+            source.load(CheckoutContext(source = "subscription"))
 
-        val result = source.submit("invoice")
+            val result = source.submit("invoice")
 
-        assertEquals("inv1", result.invoiceId)
-        assertEquals("/user/checkout", api.lastPath)
-        assertTrue(api.lastBody?.contains("plan_id") == true)
-    }
+            assertEquals("inv1", result.invoiceId)
+            assertEquals("/user/checkout", api.lastPath)
+            assertTrue(api.lastBody?.contains("plan_id") == true)
+        }
 }

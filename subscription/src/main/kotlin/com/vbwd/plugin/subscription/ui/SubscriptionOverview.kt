@@ -48,18 +48,20 @@ class SubscriptionOverviewViewModel(private val service: SubscriptionService) {
     suspend fun load() {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
         var error: String? = null
-        val subscription = try {
-            service.fetchActiveSub()
-        } catch (e: ApiError) {
-            error = e.message
-            null
-        }
-        val addons = try {
-            service.fetchUserAddOns()
-        } catch (e: ApiError) {
-            if (error == null) error = e.message
-            emptyList()
-        }
+        val subscription =
+            try {
+                service.fetchActiveSub()
+            } catch (e: ApiError) {
+                error = e.message
+                null
+            }
+        val addons =
+            try {
+                service.fetchUserAddOns()
+            } catch (e: ApiError) {
+                if (error == null) error = e.message
+                emptyList()
+            }
         _uiState.value = UiState(isLoading = false, subscription = subscription, addons = addons, errorMessage = error)
     }
 
@@ -82,11 +84,12 @@ fun SubscriptionOverviewScreen(viewModel: SubscriptionOverviewViewModel) {
     LaunchedEffect(Unit) { viewModel.load() }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(PADDING)
-            .testTag("subscription_overview_screen"),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(PADDING)
+                .testTag("subscription_overview_screen"),
         verticalArrangement = Arrangement.spacedBy(PADDING),
     ) {
         Text("Subscription", style = MaterialTheme.typography.headlineSmall)

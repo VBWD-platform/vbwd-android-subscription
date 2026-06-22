@@ -9,13 +9,21 @@ import kotlinx.serialization.Serializable
 /** Subscription API operations (DIP — testable). Port of the iOS protocol. */
 interface SubscriptionService {
     suspend fun fetchAllSubscriptions(): List<Subscription>
+
     suspend fun fetchActiveSub(): Subscription?
+
     suspend fun fetchPlans(currency: String?): List<TarifPlan>
+
     suspend fun fetchPlan(slug: String): TarifPlan
+
     suspend fun cancelSubscription(id: String)
+
     suspend fun fetchAddOns(): List<AddOn>
+
     suspend fun fetchUserAddOns(): List<AddonSubscription>
+
     suspend fun fetchUserAddOn(id: String): AddonSubscription
+
     suspend fun cancelAddOn(id: String)
 }
 
@@ -24,7 +32,6 @@ class DefaultSubscriptionService(
     private val api: ApiClient,
     private val rootCategorySlug: String? = null,
 ) : SubscriptionService {
-
     override suspend fun fetchAllSubscriptions(): List<Subscription> =
         api.get<SubscriptionsListResponse>(SubscriptionEndpoints.ALL_SUBSCRIPTIONS).subscriptions ?: emptyList()
 
@@ -32,21 +39,22 @@ class DefaultSubscriptionService(
         api.get<SubscriptionResponse>(SubscriptionEndpoints.ACTIVE_SUB).subscription
 
     override suspend fun fetchPlans(currency: String?): List<TarifPlan> {
-        val params = buildList {
-            currency?.takeIf { it.isNotEmpty() }?.let { add("currency=$it") }
-            rootCategorySlug?.takeIf { it.isNotEmpty() }?.let { add("category=$it") }
-        }
-        val path = if (params.isEmpty()) {
-            SubscriptionEndpoints.PLANS
-        } else {
-            "${SubscriptionEndpoints.PLANS}?${params.joinToString("&")}"
-        }
+        val params =
+            buildList {
+                currency?.takeIf { it.isNotEmpty() }?.let { add("currency=$it") }
+                rootCategorySlug?.takeIf { it.isNotEmpty() }?.let { add("category=$it") }
+            }
+        val path =
+            if (params.isEmpty()) {
+                SubscriptionEndpoints.PLANS
+            } else {
+                "${SubscriptionEndpoints.PLANS}?${params.joinToString("&")}"
+            }
         return api.get<PlansResponse>(path).plans ?: emptyList()
     }
 
     // Backend returns the plan at the top level (not wrapped in a "plan" key).
-    override suspend fun fetchPlan(slug: String): TarifPlan =
-        api.get(SubscriptionEndpoints.plan(slug))
+    override suspend fun fetchPlan(slug: String): TarifPlan = api.get(SubscriptionEndpoints.plan(slug))
 
     override suspend fun cancelSubscription(id: String) {
         api.post<EmptyBody, CancelResponse>(SubscriptionEndpoints.cancelSub(id), EmptyBody())

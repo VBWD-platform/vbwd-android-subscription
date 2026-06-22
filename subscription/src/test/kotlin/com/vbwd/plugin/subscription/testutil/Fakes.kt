@@ -34,7 +34,11 @@ class FakeApi(
     }
 
     override fun setToken(token: String?) = Unit
-    override fun on(event: ApiEvent, handler: () -> Unit) = Unit
+
+    override fun on(
+        event: ApiEvent,
+        handler: () -> Unit,
+    ) = Unit
 }
 
 /** Configurable [SubscriptionService] double. */
@@ -46,12 +50,20 @@ class FakeSubscriptionService(
     var userAddOns: List<AddonSubscription> = emptyList(),
 ) : SubscriptionService {
     override suspend fun fetchAllSubscriptions(): List<Subscription> = allSubs
+
     override suspend fun fetchActiveSub(): Subscription? = activeSub
+
     override suspend fun fetchPlans(currency: String?): List<TarifPlan> = plan?.let { listOf(it) } ?: emptyList()
+
     override suspend fun fetchPlan(slug: String): TarifPlan = plan ?: error("no plan")
+
     override suspend fun cancelSubscription(id: String) = Unit
+
     override suspend fun fetchAddOns(): List<AddOn> = addOns
+
     override suspend fun fetchUserAddOns(): List<AddonSubscription> = userAddOns
+
     override suspend fun fetchUserAddOn(id: String): AddonSubscription = userAddOns.first()
+
     override suspend fun cancelAddOn(id: String) = Unit
 }

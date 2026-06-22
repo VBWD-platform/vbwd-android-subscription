@@ -18,31 +18,33 @@ class SubscriptionPluginContractTest {
     }
 
     @Test
-    fun `install registers routes, the dashboard widget, menu, translations and the checkout source`() = runTest {
-        val platform = sdk()
-        SubscriptionPlugin().install(platform)
+    fun `install registers routes, the dashboard widget, menu, translations and the checkout source`() =
+        runTest {
+            val platform = sdk()
+            SubscriptionPlugin().install(platform)
 
-        assertEquals(
-            setOf("/subscription", "/subscription/plans", "/subscription/all", "/subscription/addons"),
-            platform.getRoutes().map { it.path }.toSet(),
-        )
-        assertTrue(platform.getComponents().containsKey("DashboardSubscription"))
-        assertEquals(
-            listOf("subscription", "subscription-plans", "subscription-addons"),
-            platform.getMenuItems().map { it.id },
-        )
-        assertEquals("Subscription", platform.getTranslations()["en"]?.get("nav.subscription"))
-        assertNotNull(platform.checkoutSources.get("subscription"))
-        assertEquals(10, platform.checkoutSources.get("subscription")?.priority)
-    }
+            assertEquals(
+                setOf("/subscription", "/subscription/plans", "/subscription/all", "/subscription/addons"),
+                platform.getRoutes().map { it.path }.toSet(),
+            )
+            assertTrue(platform.getComponents().containsKey("DashboardSubscription"))
+            assertEquals(
+                listOf("subscription", "subscription-plans", "subscription-addons"),
+                platform.getMenuItems().map { it.id },
+            )
+            assertEquals("Subscription", platform.getTranslations()["en"]?.get("nav.subscription"))
+            assertNotNull(platform.checkoutSources.get("subscription"))
+            assertEquals(10, platform.checkoutSources.get("subscription")?.priority)
+        }
 
     @Test
-    fun `uninstall releases the auth-login subscription`() = runTest {
-        val platform = sdk()
-        val plugin = SubscriptionPlugin()
-        plugin.install(platform)
-        assertEquals(1, platform.events.listenerCount(AppEvents.AUTH_LOGIN))
-        plugin.uninstall()
-        assertEquals(0, platform.events.listenerCount(AppEvents.AUTH_LOGIN))
-    }
+    fun `uninstall releases the auth-login subscription`() =
+        runTest {
+            val platform = sdk()
+            val plugin = SubscriptionPlugin()
+            plugin.install(platform)
+            assertEquals(1, platform.events.listenerCount(AppEvents.AUTH_LOGIN))
+            plugin.uninstall()
+            assertEquals(0, platform.events.listenerCount(AppEvents.AUTH_LOGIN))
+        }
 }

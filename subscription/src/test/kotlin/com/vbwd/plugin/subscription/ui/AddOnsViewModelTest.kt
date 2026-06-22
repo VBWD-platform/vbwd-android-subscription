@@ -25,12 +25,14 @@ class AddOnsViewModelTest {
 
     @Test
     fun `ui state partitions add-ons into subscription-dependent and global`() {
-        val state = AddOnsViewModel.UiState(
-            addons = listOf(
-                AddOn(id = "a", name = "Tied", tarifPlanIds = listOf("p1")),
-                AddOn(id = "b", name = "Global"),
-            ),
-        )
+        val state =
+            AddOnsViewModel.UiState(
+                addons =
+                    listOf(
+                        AddOn(id = "a", name = "Tied", tarifPlanIds = listOf("p1")),
+                        AddOn(id = "b", name = "Global"),
+                    ),
+            )
         assertEquals(listOf("a"), state.subscriptionAddons.map { it.id })
         assertEquals(listOf("b"), state.globalAddons.map { it.id })
     }

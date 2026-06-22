@@ -9,10 +9,11 @@ class SubscriptionModelsTest {
 
     @Test
     fun `tarif plan decodes snake_case and a features array`() {
-        val body = """
+        val body =
+            """
             {"id":"p1","name":"Pro","display_price":29.99,"display_currency":"USD",
              "billing_period":"month","features":["a","b"]}
-        """.trimIndent()
+            """.trimIndent()
         val plan = json.decodeFromString(TarifPlan.serializer(), body)
         assertEquals(29.99, plan.displayPrice)
         assertEquals("month", plan.billingPeriod)

@@ -31,14 +31,15 @@ class SubscriptionScreenshotTest {
 
     @Test
     fun tarifPlans() {
-        val plan = TarifPlan(
-            id = "p1",
-            name = "Pro",
-            displayPrice = 29.99,
-            displayCurrency = "USD",
-            billingPeriod = "month",
-            features = listOf("Unlimited projects", "Priority support"),
-        )
+        val plan =
+            TarifPlan(
+                id = "p1",
+                name = "Pro",
+                displayPrice = 29.99,
+                displayCurrency = "USD",
+                billingPeriod = "month",
+                features = listOf("Unlimited projects", "Priority support"),
+            )
         val viewModel = TarifPlansViewModel(FakeSubscriptionService(plan = plan), Cart())
         captureRoboImage("screenshots/tarif_plans.png") {
             VbwdTheme(theme) {

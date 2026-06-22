@@ -32,14 +32,15 @@ import com.vbwd.plugin.subscription.ui.TarifPlansViewModel
 class SubscriptionPlugin : Plugin {
     private var unsubscribe: Unsubscribe? = null
 
-    override val metadata = PluginMetadata(
-        name = "subscription",
-        version = SemanticVersion(1, 0, 0),
-        description = "Subscription management — plans, subscriptions, add-ons, checkout.",
-        author = "VBWD",
-        keywords = listOf("subscription", "plans", "addons", "checkout"),
-        translations = mapOf("en" to TRANSLATIONS),
-    )
+    override val metadata =
+        PluginMetadata(
+            name = "subscription",
+            version = SemanticVersion(1, 0, 0),
+            description = "Subscription management — plans, subscriptions, add-ons, checkout.",
+            author = "VBWD",
+            keywords = listOf("subscription", "plans", "addons", "checkout"),
+            translations = mapOf("en" to TRANSLATIONS),
+        )
 
     // Composition root: registers 4 routes + a widget + the checkout source +
     // menu items + translations. Long by nature (mirrors the iOS install); the
@@ -116,9 +117,10 @@ class SubscriptionPlugin : Plugin {
         SubscriptionMenuItems.all().forEach { sdk.addMenuItem(it) }
         sdk.addTranslations("en", TRANSLATIONS)
 
-        unsubscribe = sdk.events.on(AppEvents.AUTH_LOGIN) {
-            // Reserved: plugins may refresh subscription data on login.
-        }
+        unsubscribe =
+            sdk.events.on(AppEvents.AUTH_LOGIN) {
+                // Reserved: plugins may refresh subscription data on login.
+            }
     }
 
     override suspend fun uninstall() {
@@ -129,16 +131,17 @@ class SubscriptionPlugin : Plugin {
     private companion object {
         const val PERMISSION = "subscription.plans.view"
 
-        val TRANSLATIONS = mapOf(
-            "subscription.title" to "Subscription",
-            "subscription.plans.title" to "Tarif Plans",
-            "subscription.addons.title" to "Add-Ons",
-            "subscription.overview.title" to "Subscription Overview",
-            "subscription.no_active" to "No active subscription",
-            "subscription.subscribe" to "Subscribe",
-            "nav.subscription" to "Subscription",
-            "nav.plans" to "Tarif Plans",
-            "nav.addons" to "Add-Ons",
-        )
+        val TRANSLATIONS =
+            mapOf(
+                "subscription.title" to "Subscription",
+                "subscription.plans.title" to "Tarif Plans",
+                "subscription.addons.title" to "Add-Ons",
+                "subscription.overview.title" to "Subscription Overview",
+                "subscription.no_active" to "No active subscription",
+                "subscription.subscribe" to "Subscribe",
+                "nav.subscription" to "Subscription",
+                "nav.plans" to "Tarif Plans",
+                "nav.addons" to "Add-Ons",
+            )
     }
 }
